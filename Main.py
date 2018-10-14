@@ -10,15 +10,16 @@ def Main():
         rollD = input("\nPress Y to roll dice, press Q to quit: ")
         if rollD.upper() == 'Y':
             dice = rollDice()
-        slot = input("Which slot did you want to use? ")
-        valid = validator(scoreCard, slot)
-        if valid:
-            scoreCard = changeScoreCard(scoreCard, slot, dice)
-            printScorecard(scoreCard)
-            False
-        else:
-            print("Please enter a valid slot")
 
+        breaker = True
+        while breaker:
+            slot = input("Which slot did you want to use? ")
+            valid = validator(scoreCard, slot)
+            if valid:
+                breaker = False
+
+        scoreCard = changeScoreCard(scoreCard, slot, dice)
+        printScorecard(scoreCard)
 
     return
 
@@ -40,9 +41,12 @@ def validator(scoreCard, slot):
     :param slot: the slot where you want to input the score
     :return: True or False
     '''
-    if scoreCard[slot] == 'Empty':
-        return True
-    else:
+    try:
+        if scoreCard[slot] == 'Empty':
+            return True
+        else:
+            return False
+    except KeyError:
         return False
 
 
