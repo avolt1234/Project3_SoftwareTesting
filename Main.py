@@ -13,7 +13,7 @@ def Main():
 
         breaker = True
         while breaker:
-            slot = input("Which slot did you want to use? ")
+            slot = input("Which slot did you want to use? ").title()
             valid = validator(scoreCard, slot)
             if valid:
                 breaker = False
@@ -42,7 +42,7 @@ def validator(scoreCard, slot):
     :return: True or False
     '''
     try:
-        if scoreCard[slot] == 'Empty':
+        if scoreCard[slot.title()] == 'Empty':
             return True
         else:
             return False
