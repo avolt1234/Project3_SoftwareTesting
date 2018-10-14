@@ -5,11 +5,11 @@ def Main():
     return
 
 def rollDice():
+
+    # Rolls 5 dice and returns a list of the dice rolls
     rollList = []
     for i in range(5):
         rollList.append(randint(1,6))
-
-
     return rollList
 
 
