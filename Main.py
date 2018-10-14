@@ -72,6 +72,5 @@ def printScorecard(scoreCard):
         print(str(key) + '\t' + str(value))
 
 
-
 if __name__  == '__main__':
     Main()
