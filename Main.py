@@ -5,7 +5,6 @@ def Main():
     scoreCard = {'Aces': 'Empty', 'Twos': 'Empty', 'Threes': 'Empty', 'Fours': 'Empty', 'Fives': 'Empty',
                  'Sixes': 'Empty'}
 
-
     while True:
         rollD = input("\nPress Y to roll dice, press Q to quit: ")
         if rollD.upper() == 'Y':
@@ -17,11 +16,31 @@ def Main():
             valid = validator(scoreCard, slot)
             if valid:
                 breaker = False
+            else:
+                print("The " + slot + " slot is already in use")
 
         scoreCard = changeScoreCard(scoreCard, slot, dice)
         printScorecard(scoreCard)
 
     return
+
+def MainDebug(scoreCard, diceRolls):
+
+    printScorecard(scoreCard)
+
+    print("\nDice roll is " + str(diceRolls))
+
+    breaker = True
+    while breaker:
+        slot = input("Which slot did you want to use? ").title()
+        valid = validator(scoreCard, slot)
+        if valid:
+            breaker = False
+        else:
+            print("The " + slot + " slot is already in use")
+
+    scoreCard = changeScoreCard(scoreCard, slot, diceRolls)
+    printScorecard(scoreCard)
 
 def rollDice():
 
@@ -67,10 +86,35 @@ def changeScoreCard(scoreCard, slot, rolls):
     return scoreCard
 
 def printScorecard(scoreCard):
-
+    print()
     for key, value in scoreCard.items():
         print(str(key) + '\t' + str(value))
 
-
 if __name__  == '__main__':
-    Main()
+    debug = input("Enter debug to test program: ")
+
+    if debug.title() == 'Debug':
+
+        scoreCard = {'Aces': 'Empty', 'Twos': 'Empty', 'Threes': 'Empty', 'Fours': 'Empty', 'Fives': 'Empty',
+                     'Sixes': 'Empty'}
+
+        whichSlot = input("Enter the slot: ")
+        slotValue = input("Enter the value, leave blank if empty: ")
+
+        if slotValue:
+            scoreCard[whichSlot] = slotValue
+
+        roller = input("Enter 5 dice rolls, each separated by a comma (1, 2, 3, 4, 5): ")
+
+        diceRoll = [1, 2, 3, 4, 5]
+
+        finalRoll = []
+
+        for char in roller:
+            if char != ',' and char != ' ':
+                finalRoll.append(int(char))
+        if finalRoll:
+            diceRoll = finalRoll
+        MainDebug(scoreCard, diceRoll)
+    else:
+        Main()
