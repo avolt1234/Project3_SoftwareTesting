@@ -2,8 +2,27 @@ from random import randint
 
 def Main():
 
-    scoreCard = {'Aces': 'Empty', 'Twos': 'Empty', 'Threes': 'Empty', 'Fours': 'Empty', 'Fives': 'Empty',
-                 'Sixes': 'Empty'}
+    scoreCard = {'Aces': 'Empty',
+                 'Twos': 'Empty',
+                 'Threes': 'Empty',
+                 'Fours': 'Empty',
+                 'Fives': 'Empty',
+                 'Sixes': 'Empty',
+                 '3oak': 'Empty',
+                 '4oak': 'Empty',
+                 'Total Score': 0,
+                 'Bonus': 0,
+                 'Total': 0,
+                 'Full House': 'Empty',
+                 'Small Straight': 'Empty',
+                 'Large Straight': 'Empty',
+                 'Yahtzee': 'Empty',
+                 'Chance': 'Empty',
+                 'Yahtzee Bonus': 0,
+                 'Total of lower section': 0,
+                 'Total of upper section': 0,
+                 'Grand Total': 0
+                 }
 
     while True:
         rollD = input("\nPress Y to roll dice, press Q to quit: ")
@@ -83,6 +102,21 @@ def changeScoreCard(scoreCard, slot, rolls):
 
     scoreCard[slot] = holder
 
+    totalScore = 0
+
+    counter = 0
+
+    for score in scoreCard.values():
+        if score != 'Empty' and counter < 6:
+            totalScore += int(score)
+        counter += 1
+
+    scoreCard['Total Score'] = totalScore
+    if totalScore >= 63:
+        scoreCard['Bonus'] = 35
+
+    scoreCard['Total'] = scoreCard['Bonus'] + totalScore
+
     return scoreCard
 
 def printScorecard(scoreCard):
@@ -96,25 +130,25 @@ if __name__  == '__main__':
     if debug.title() == 'Debug':
 
         scoreCard = {'Aces': 'Empty', 'Twos': 'Empty', 'Threes': 'Empty', 'Fours': 'Empty', 'Fives': 'Empty',
-                     'Sixes': 'Empty'}
+                     'Sixes': 'Empty', 'Total Score': 0, 'Bonus': 0, 'Total': 0}
+        while True:
+            whichSlot = input("Enter the slot: ")
+            slotValue = input("Enter the value, leave blank if empty: ")
 
-        whichSlot = input("Enter the slot: ")
-        slotValue = input("Enter the value, leave blank if empty: ")
+            if slotValue:
+                scoreCard[whichSlot] = slotValue
 
-        if slotValue:
-            scoreCard[whichSlot] = slotValue
+            roller = input("Enter 5 dice rolls, each separated by a comma (1, 2, 3, 4, 5): ")
 
-        roller = input("Enter 5 dice rolls, each separated by a comma (1, 2, 3, 4, 5): ")
+            diceRoll = [1, 2, 3, 4, 5]
 
-        diceRoll = [1, 2, 3, 4, 5]
+            finalRoll = []
 
-        finalRoll = []
-
-        for char in roller:
-            if char != ',' and char != ' ':
-                finalRoll.append(int(char))
-        if finalRoll:
-            diceRoll = finalRoll
-        MainDebug(scoreCard, diceRoll)
+            for char in roller:
+                if char != ',' and char != ' ':
+                    finalRoll.append(int(char))
+            if finalRoll:
+                diceRoll = finalRoll
+            MainDebug(scoreCard, diceRoll)
     else:
         Main()
