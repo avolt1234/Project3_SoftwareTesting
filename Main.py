@@ -13,7 +13,7 @@ def Main(debug):
                  'Total Score': 0,
                  'Bonus': 0,
                  'Total': 0,
-                 'Full House': 'Empty',
+                 'Full-House': 'Empty',
                  'Small Straight': 'Empty',
                  'Large Straight': 'Empty',
                  'Yahtzee': 'Empty',
@@ -27,6 +27,7 @@ def Main(debug):
         #TODO create dictionary to parse through
         scoreCard = changeScoreCard(scoreCard, '3-of-a-Kind', [3, 5, 5, 2, 5])
         scoreCard = changeScoreCard(scoreCard, '4-of-a-Kind', [3, 5, 5, 5, 5])
+        scoreCard = changeScoreCard(scoreCard, 'Full-House', [3, 5, 5, 5, 3])
         printScorecard(scoreCard)
     else:
         while True:
@@ -85,9 +86,9 @@ def changeScoreCard(scoreCard, slot, rolls):
     elif slot == '4-of-a-Kind':
         newScore = score4OAK(rolls)
         scoreCard['4-of-a-Kind'] = newScore
-    elif slot == 'Full House':
+    elif slot == 'Full-House':
         newScore = scoreFullHouse(rolls)
-        scoreCard['Full House'] = newScore
+        scoreCard['Full-House'] = newScore
     else:
         whichOne = {'Aces' : 1, 'Twos' : 2, 'Threes' : 3, 'Fours' : 4, 'Fives' : 5, 'Sixes' : 6}
         mySlot = whichOne[slot]
@@ -153,8 +154,19 @@ def scoreFullHouse(roll):
 
     setroll = set(roll)
 
+    valid = False
 
+    if len(setroll) == 2:
+        for num in setroll:
+            if roll.count(num) == 2 or roll.count(num) == 3:
+                valid = True
+            else:
+                valid = False
 
+    if valid:
+        return 25
+    else:
+        return False
 
 if __name__  == '__main__':
     debug = input("Enter T to test program: ")
