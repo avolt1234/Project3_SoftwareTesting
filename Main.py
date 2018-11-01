@@ -99,7 +99,12 @@ def changeScoreCard(scoreCard, slot, rolls):
         scoreCard['Large-Straight'] = newScore
     elif slot == 'Yahtzee:':
         newScore = scoreYahtzee(rolls)
-        scoreCard['Yahtzee'] = newScore
+        if scoreCard['Yahtzee'] == 'Empty':
+            scoreCard['Yahtzee'] = newScore
+        elif scoreCard['Yahtzee Bonus'] != 300:
+            scoreCard['Yahtzee Bonus'] += newScore
+        else:
+            print("Wrong one")
     else:
         whichOne = {'Aces' : 1, 'Twos' : 2, 'Threes' : 3, 'Fours' : 4, 'Fives' : 5, 'Sixes' : 6}
         mySlot = whichOne[slot]
