@@ -14,8 +14,8 @@ def Main(debug):
                  'Bonus': 0,
                  'Total': 0,
                  'Full-House': 'Empty',
-                 'Small Straight': 'Empty',
-                 'Large Straight': 'Empty',
+                 'Small-Straight': 'Empty',
+                 'Large-Straight': 'Empty',
                  'Yahtzee': 'Empty',
                  'Chance': 'Empty',
                  'Yahtzee Bonus': 0,
@@ -28,6 +28,8 @@ def Main(debug):
         scoreCard = changeScoreCard(scoreCard, '3-of-a-Kind', [3, 5, 5, 2, 5])
         scoreCard = changeScoreCard(scoreCard, '4-of-a-Kind', [3, 5, 5, 5, 5])
         scoreCard = changeScoreCard(scoreCard, 'Full-House', [3, 5, 5, 5, 3])
+        scoreCard = changeScoreCard(scoreCard, 'Small-Straight', [1, 2, 3, 4, 6])
+        scoreCard = changeScoreCard(scoreCard, 'Large-Straight', [1, 2, 6, 4, 5])
         printScorecard(scoreCard)
     else:
         while True:
@@ -89,6 +91,15 @@ def changeScoreCard(scoreCard, slot, rolls):
     elif slot == 'Full-House':
         newScore = scoreFullHouse(rolls)
         scoreCard['Full-House'] = newScore
+    elif slot == 'Small-Straight':
+        newScore = scoreSmallStraight(rolls)
+        scoreCard['Small-Straight'] = newScore
+    elif slot == 'Large-Straight':
+        newScore = scoreLargeStraight(rolls)
+        scoreCard['Large-Straight'] = newScore
+    elif slot == 'Yahtzee:':
+        newScore = scoreYahtzee(roll)
+        scoreCard['Yahtzee'] = newScore
     else:
         whichOne = {'Aces' : 1, 'Twos' : 2, 'Threes' : 3, 'Fours' : 4, 'Fives' : 5, 'Sixes' : 6}
         mySlot = whichOne[slot]
@@ -165,6 +176,44 @@ def scoreFullHouse(roll):
 
     if valid:
         return 25
+    else:
+        return False
+
+def scoreSmallStraight(roll):
+    first = roll[0] + 1
+    second = roll[1] + 1
+
+    #check if first num rolled is part of the small straight
+
+    firstCheck = True
+
+    for num in range(1, len(roll) - 1):
+        if first != int(roll[num]):
+            firstCheck = False
+        first += 1
+
+    secondCheck = True
+
+    for num in range(2, len(roll)):
+        if second != int(roll[num]):
+            secondCheck = False
+        second += 1
+
+    if firstCheck or secondCheck:
+        return 30
+    else:
+        return False
+
+def scoreLargeStraight(roll):
+    roll2 = sorted(roll, key=int)
+    if len(set(roll)) == 5 and roll2 == roll:
+        return 40
+    else:
+        return False
+
+def scoreYahtzee(roll):
+    if len(set(roll)) == 1:
+        return 100
     else:
         return False
 
