@@ -8,11 +8,11 @@ def Main(debug):
                  'Fours': 'Empty',
                  'Fives': 'Empty',
                  'Sixes': 'Empty',
-                 '3-of-a-Kind': 'Empty',
-                 '4-of-a-Kind': 'Empty',
                  'Total Score': 0,
                  'Bonus': 0,
                  'Total': 0,
+                 '3-of-a-Kind': 'Empty',
+                 '4-of-a-Kind': 'Empty',
                  'Full-House': 'Empty',
                  'Small-Straight': 'Empty',
                  'Large-Straight': 'Empty',
@@ -24,12 +24,33 @@ def Main(debug):
                  'Grand Total': 0
                  }
     if debug.capitalize() == 'T':
+        test1 = {1: ['Aces', [1, 2, 3, 4, 5]],
+                 2: ['3-of-a-Kind', [2, 3, 2, 4, 2]],
+                 3: ['3-of-a-Kind', [4, 2, 6, 4, 4]],
+                 4: ['Fours', [4, 2, 6, 4, 4]],
+                 5: ['Yahtzee', [6, 6, 6, 6, 6]],
+                 6: ['Full-House', [3, 5, 5, 3, 3]],
+                 7: ['Fives', [5, 2, 3, 5, 5]],
+                 8: ['Chance', [4, 4, 5, 5, 2]],
+                 9: ['Twos', [2, 2, 2, 3, 4]],
+                 10: ['Fours', [4, 2, 1, 3, 4]],
+                 11: ['Small-Straight', [4, 2, 1, 3, 4]],
+                 12: ['4-of-a-Kind', [3, 3, 3, 3, 3]],
+                 13: ['Large-Straight', [6, 4, 3, 2, 5]],
+                 14: ['Sixes', [6, 4, 6, 2, 1]],
+                 15: ['Threes', [3, 3, 3, 3, 3]]
+                 }
         #TODO create dictionary to parse through
-        scoreCard = changeScoreCard(scoreCard, '3-of-a-Kind', [3, 5, 5, 2, 5])
-        scoreCard = changeScoreCard(scoreCard, '4-of-a-Kind', [3, 5, 5, 5, 5])
-        scoreCard = changeScoreCard(scoreCard, 'Full-House', [3, 5, 5, 5, 3])
-        scoreCard = changeScoreCard(scoreCard, 'Small-Straight', [1, 2, 3, 4, 6])
-        scoreCard = changeScoreCard(scoreCard, 'Large-Straight', [1, 2, 6, 4, 5])
+
+        for i in range(len(test1)):
+            scoreCard = changeScoreCard(scoreCard, test1[i + 1][0], test1[i + 1][1])
+        printScorecard(scoreCard)
+        #scoreCard
+        #scoreCard = changeScoreCard(scoreCard, '3-of-a-Kind', [3, 5, 5, 2, 5])
+        #scoreCard = changeScoreCard(scoreCard, '4-of-a-Kind', [3, 5, 5, 5, 5])
+        #scoreCard = changeScoreCard(scoreCard, 'Full-House', [3, 5, 5, 5, 3])
+        #scoreCard = changeScoreCard(scoreCard, 'Small-Straight', [1, 2, 3, 4, 6])
+        #scoreCard = changeScoreCard(scoreCard, 'Large-Straight', [1, 2, 6, 4, 5])
         printScorecard(scoreCard)
     else:
         while True:
@@ -45,7 +66,6 @@ def Main(debug):
                     breaker = False
                 else:
                     print("The " + slot + " slot is already in use")
-
             scoreCard = changeScoreCard(scoreCard, slot, dice)
             printScorecard(scoreCard)
 
@@ -81,6 +101,8 @@ def validator(scoreCard, slot):
 
 
 def changeScoreCard(scoreCard, slot, rolls):
+    if len(set(rolls)) == 1 and scoreCard['Yahtzee'] != 'Empty':
+        scoreCard['Yahtzee Bonus'] = scoreCard['Yahtzee Bonus'] + 100
 
     if slot == '3-of-a-Kind':
         newScore = score3OAK(rolls)
@@ -97,14 +119,11 @@ def changeScoreCard(scoreCard, slot, rolls):
     elif slot == 'Large-Straight':
         newScore = scoreLargeStraight(rolls)
         scoreCard['Large-Straight'] = newScore
-    elif slot == 'Yahtzee:':
+    elif slot == 'Yahtzee':
         newScore = scoreYahtzee(rolls)
-        if scoreCard['Yahtzee'] == 'Empty':
-            scoreCard['Yahtzee'] = newScore
-        elif scoreCard['Yahtzee Bonus'] != 300:
-            scoreCard['Yahtzee Bonus'] += newScore
-        else:
-            print("Wrong one")
+        scoreCard['Yahtzee'] = newScore
+    elif slot == 'Chance':
+        scoreCard['Chance'] = sum(rolls)
     else:
         whichOne = {'Aces' : 1, 'Twos' : 2, 'Threes' : 3, 'Fours' : 4, 'Fives' : 5, 'Sixes' : 6}
         mySlot = whichOne[slot]
@@ -140,7 +159,7 @@ def score3OAK(roll):
     valid = False
 
     for num in roll:
-        if roll.count(num) == 3:
+        if roll.count(num) >= 3:
             valid = True
 
     score = 0
@@ -149,13 +168,13 @@ def score3OAK(roll):
             score += int(num)
         return score
     else:
-        return False
+        return 0
 
 def score4OAK(roll):
     valid = False
 
     for num in roll:
-        if roll.count(num) == 4:
+        if roll.count(num) >= 4:
             valid = True
 
     score = 0
@@ -164,7 +183,7 @@ def score4OAK(roll):
             score += int(num)
         return score
     else:
-        return False
+        return 0
 
 def scoreFullHouse(roll):
 
@@ -178,13 +197,13 @@ def scoreFullHouse(roll):
                 valid = True
             else:
                 valid = False
-
     if valid:
         return 25
-    else:
-        return False
+    return 0
 
 def scoreSmallStraight(roll):
+
+    roll = sorted(roll)
     first = roll[0] + 1
     second = roll[1] + 1
 
@@ -207,14 +226,16 @@ def scoreSmallStraight(roll):
     if firstCheck or secondCheck:
         return 30
     else:
-        return False
+        return 0
 
 def scoreLargeStraight(roll):
-    roll2 = sorted(roll, key=int)
-    if len(set(roll)) == 5 and roll2 == roll:
+    roll2 = sorted(roll)
+    if roll2[0] == 1 and roll2[4] == 5 and len(set(roll2)) == 5:
+        return 40
+    elif roll2[0] == 2 and roll2[4] == 6 and len(set(roll2)) == 5:
         return 40
     else:
-        return False
+        return 0
 
 def scoreYahtzee(roll):
     if len(set(roll)) == 1:
