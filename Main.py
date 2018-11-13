@@ -18,7 +18,7 @@ def Main(debug):
                  'Large-Straight': 'Empty',
                  'Yahtzee': 'Empty',
                  'Chance': 'Empty',
-                 'Yahtzee Bonus': 0,
+                 'Yahtzee-Bonus': 0,
                  'Total of lower section': 0,
                  'Total of upper section': 0,
                  'Grand Total': 0
@@ -44,14 +44,10 @@ def Main(debug):
 
         for i in range(len(test1)):
             scoreCard = changeScoreCard(scoreCard, test1[i + 1][0], test1[i + 1][1])
+
+            printScorecard(scoreCard)
         printScorecard(scoreCard)
-        #scoreCard
-        #scoreCard = changeScoreCard(scoreCard, '3-of-a-Kind', [3, 5, 5, 2, 5])
-        #scoreCard = changeScoreCard(scoreCard, '4-of-a-Kind', [3, 5, 5, 5, 5])
-        #scoreCard = changeScoreCard(scoreCard, 'Full-House', [3, 5, 5, 5, 3])
-        #scoreCard = changeScoreCard(scoreCard, 'Small-Straight', [1, 2, 3, 4, 6])
-        #scoreCard = changeScoreCard(scoreCard, 'Large-Straight', [1, 2, 6, 4, 5])
-        printScorecard(scoreCard)
+
     else:
         while True:
             rollD = input("\nPress Y to roll dice, press Q to quit: ")
@@ -90,9 +86,9 @@ def validator(scoreCard, slot):
     :return: True or False
     '''
     try:
-        if scoreCard[slot.title()] == 'Empty':
+        if scoreCard[slot] == 'Empty':
             return True
-        elif slot == 'Yahtzee Bonus' and scoreCard['Yahtzee Bonus'] < 300:
+        elif slot == 'Yahtzee-Bonus':
             return True
         else:
             return False
@@ -101,53 +97,68 @@ def validator(scoreCard, slot):
 
 
 def changeScoreCard(scoreCard, slot, rolls):
-    if len(set(rolls)) == 1 and scoreCard['Yahtzee'] != 'Empty':
-        scoreCard['Yahtzee Bonus'] = scoreCard['Yahtzee Bonus'] + 100
+
+    letGo = validator(scoreCard, slot)
+
+    if letGo:
+
+        if len(set(rolls)) == 1 and scoreCard['Yahtzee'] != 'Empty':
+            scoreCard['Yahtzee-Bonus'] = scoreCard['Yahtzee-Bonus'] + 100
+
     #Checkers
-    if slot == '3-of-a-Kind':
-        newScore = score3OAK(rolls)
-        scoreCard['3-of-a-Kind'] = newScore
-    elif slot == '4-of-a-Kind':
-        newScore = score4OAK(rolls)
-        scoreCard['4-of-a-Kind'] = newScore
-    elif slot == 'Full-House':
-        newScore = scoreFullHouse(rolls)
-        scoreCard['Full-House'] = newScore
-    elif slot == 'Small-Straight':
-        newScore = scoreSmallStraight(rolls)
-        scoreCard['Small-Straight'] = newScore
-    elif slot == 'Large-Straight':
-        newScore = scoreLargeStraight(rolls)
-        scoreCard['Large-Straight'] = newScore
-    elif slot == 'Yahtzee':
-        newScore = scoreYahtzee(rolls)
-        scoreCard['Yahtzee'] = newScore
-    elif slot == 'Chance':
-        scoreCard['Chance'] = sum(rolls)
+        if slot == '3-of-a-Kind':
+            newScore = score3OAK(rolls)
+            scoreCard['3-of-a-Kind'] = newScore
+        elif slot == '4-of-a-Kind':
+            newScore = score4OAK(rolls)
+            scoreCard['4-of-a-Kind'] = newScore
+        elif slot == 'Full-House':
+            newScore = scoreFullHouse(rolls)
+            scoreCard['Full-House'] = newScore
+        elif slot == 'Small-Straight':
+            newScore = scoreSmallStraight(rolls)
+            scoreCard['Small-Straight'] = newScore
+        elif slot == 'Large-Straight':
+            newScore = scoreLargeStraight(rolls)
+            scoreCard['Large-Straight'] = newScore
+        elif slot == 'Yahtzee':
+            newScore = scoreYahtzee(rolls)
+            scoreCard['Yahtzee'] = newScore
+        elif slot == 'Chance':
+            scoreCard['Chance'] = sum(rolls)
+        else:
+            whichOne = {'Aces' : 1, 'Twos' : 2, 'Threes' : 3, 'Fours' : 4, 'Fives' : 5, 'Sixes' : 6}
+            mySlot = whichOne[slot]
+            holder = 0
+            for roll in rolls:
+                if roll == mySlot:
+                    holder += roll
+            scoreCard[slot] = holder
+        totalScore = 0
+
+        counter = 0
+
+        for score in scoreCard.values():
+            if score != 'Empty' and counter < 6:
+                totalScore += int(score)
+            counter += 1
+
+        scoreCard['Total Score'] = totalScore
+        if totalScore >= 63:
+            scoreCard['Bonus'] = 35
+
+        scoreCard['Total'] = scoreCard['Bonus'] + totalScore
+
+        scoreCard['Total of upper section'] = scoreCard['Total']
+        scoreCard['Total of lower section'] = lowCount(scoreCard)
+
+        scoreCard['Grand Total'] = scoreCard['Total of upper section'] + scoreCard['Total of lower section']
+
+        return scoreCard
+
     else:
-        whichOne = {'Aces' : 1, 'Twos' : 2, 'Threes' : 3, 'Fours' : 4, 'Fives' : 5, 'Sixes' : 6}
-        mySlot = whichOne[slot]
-        holder = 0
-        for roll in rolls:
-            if roll == mySlot:
-                holder += roll
-        scoreCard[slot] = holder
-    totalScore = 0
-
-    counter = 0
-
-    for score in scoreCard.values():
-        if score != 'Empty' and counter < 6:
-            totalScore += int(score)
-        counter += 1
-
-    scoreCard['Total Score'] = totalScore
-    if totalScore >= 63:
-        scoreCard['Bonus'] = 35
-
-    scoreCard['Total'] = scoreCard['Bonus'] + totalScore
-
-    return scoreCard
+        print('\n\nThe slot {0} is already used, please select another'.format(slot))
+        return scoreCard
 
 def printScorecard(scoreCard):
     print()
@@ -239,9 +250,25 @@ def scoreLargeStraight(roll):
 
 def scoreYahtzee(roll):
     if len(set(roll)) == 1:
-        return 100
+        return 50
     else:
         return False
+
+def lowCount(scoreCard):
+
+    count = 0
+    if scoreCard['Full-House'] != 'Empty':
+        count += int(scoreCard['Full-House'])
+    if scoreCard['Small-Straight'] != 'Empty':
+        count += int(scoreCard['Small-Straight'])
+    if scoreCard['Large-Straight'] != 'Empty':
+        count += int(scoreCard['Large-Straight'])
+    if scoreCard['Yahtzee'] != 'Empty':
+        count += int(scoreCard['Yahtzee'])
+    if scoreCard['Yahtzee-Bonus']:
+        count += int(scoreCard['Yahtzee-Bonus'])
+
+    return count
 
 if __name__  == '__main__':
     debug = input("Enter T to test program: ")
