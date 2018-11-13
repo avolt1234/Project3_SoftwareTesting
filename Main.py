@@ -40,18 +40,30 @@ def Main(debug):
                  14: ['Sixes', [6, 4, 6, 2, 1]],
                  15: ['Threes', [3, 3, 3, 3, 3]]
                  }
-        #TODO create dictionary to parse through
 
-        for i in range(len(test1)):
-            scoreCard = changeScoreCard(scoreCard, test1[i + 1][0], test1[i + 1][1])
-        printScorecard(scoreCard)
-        #scoreCard
-        #scoreCard = changeScoreCard(scoreCard, '3-of-a-Kind', [3, 5, 5, 2, 5])
-        #scoreCard = changeScoreCard(scoreCard, '4-of-a-Kind', [3, 5, 5, 5, 5])
-        #scoreCard = changeScoreCard(scoreCard, 'Full-House', [3, 5, 5, 5, 3])
-        #scoreCard = changeScoreCard(scoreCard, 'Small-Straight', [1, 2, 3, 4, 6])
-        #scoreCard = changeScoreCard(scoreCard, 'Large-Straight', [1, 2, 6, 4, 5])
-        printScorecard(scoreCard)
+        test2 = {1: ['3-of-a-Kind', [1, 2, 1, 1, 5]],
+                 2: ['Twos', [2, 2, 4, 5, 2]],
+                 3: ['Small-Straight', [1, 5, 3, 2, 4]],
+                 4: ['Full-House', [2, 2, 3, 3, 2]],
+                 5: ['Aces', [1, 3, 1, 1, 1]],
+                 6: ['Chance', [1, 3, 1, 2, 2]],
+                 7: ['Fives', [5, 5, 4, 5, 2]],
+                 8: ['4-of-a-Kind', [6, 6, 6, 5, 6]],
+                 9: ['Fours', [4, 4, 4, 1, 4]],
+                 10: ['Yahtzee', [6, 6, 6, 6, 6]],
+                 11: ['Threes', [3, 3, 3, 3, 3]],
+                 12: ['Large-Straight', [5, 1, 3, 4, 2]],
+                 13: ['Sixes', [6, 4, 3, 6, 5]],
+                 }
+
+        tests = [test1, test2]
+        #TODO create dictionary to parse through
+        for test in tests:
+            scoreCard1 = scoreCard.copy()
+            for i in range(len(test)):
+                scoreCard1 = changeScoreCard(scoreCard1, test[i + 1][0], test[i + 1][1])
+                printScorecard(scoreCard1)
+
     else:
         while True:
             rollD = input("\nPress Y to roll dice, press Q to quit: ")
@@ -90,9 +102,7 @@ def validator(scoreCard, slot):
     :return: True or False
     '''
     try:
-        if scoreCard[slot.title()] == 'Empty':
-            return True
-        elif slot == 'Yahtzee Bonus' and scoreCard['Yahtzee Bonus'] < 300:
+        if scoreCard[slot] == 'Empty' or slot == 'Yahtzee Bonus':
             return True
         else:
             return False
@@ -101,53 +111,86 @@ def validator(scoreCard, slot):
 
 
 def changeScoreCard(scoreCard, slot, rolls):
-    if len(set(rolls)) == 1 and scoreCard['Yahtzee'] != 'Empty':
-        scoreCard['Yahtzee Bonus'] = scoreCard['Yahtzee Bonus'] + 100
-    #Checkers
-    if slot == '3-of-a-Kind':
-        newScore = score3OAK(rolls)
-        scoreCard['3-of-a-Kind'] = newScore
-    elif slot == '4-of-a-Kind':
-        newScore = score4OAK(rolls)
-        scoreCard['4-of-a-Kind'] = newScore
-    elif slot == 'Full-House':
-        newScore = scoreFullHouse(rolls)
-        scoreCard['Full-House'] = newScore
-    elif slot == 'Small-Straight':
-        newScore = scoreSmallStraight(rolls)
-        scoreCard['Small-Straight'] = newScore
-    elif slot == 'Large-Straight':
-        newScore = scoreLargeStraight(rolls)
-        scoreCard['Large-Straight'] = newScore
-    elif slot == 'Yahtzee':
-        newScore = scoreYahtzee(rolls)
-        scoreCard['Yahtzee'] = newScore
-    elif slot == 'Chance':
-        scoreCard['Chance'] = sum(rolls)
+
+    isVal = validator(scoreCard, slot)
+
+    if isVal:
+        if len(set(rolls)) == 1 and scoreCard['Yahtzee'] != 'Empty':
+            scoreCard['Yahtzee Bonus'] = scoreCard['Yahtzee Bonus'] + 100
+
+        #Checkers
+        if slot == '3-of-a-Kind':
+            newScore = score3OAK(rolls)
+            scoreCard['3-of-a-Kind'] = newScore
+        elif slot == '4-of-a-Kind':
+            newScore = score4OAK(rolls)
+            scoreCard['4-of-a-Kind'] = newScore
+        elif slot == 'Full-House':
+            newScore = scoreFullHouse(rolls)
+            scoreCard['Full-House'] = newScore
+        elif slot == 'Small-Straight':
+            newScore = scoreSmallStraight(rolls)
+            scoreCard['Small-Straight'] = newScore
+        elif slot == 'Large-Straight':
+            newScore = scoreLargeStraight(rolls)
+            scoreCard['Large-Straight'] = newScore
+        elif slot == 'Yahtzee':
+            newScore = scoreYahtzee(rolls)
+            scoreCard['Yahtzee'] = newScore
+        elif slot == 'Chance':
+            scoreCard['Chance'] = sum(rolls)
+        else:
+            whichOne = {'Aces' : 1, 'Twos' : 2, 'Threes' : 3, 'Fours' : 4, 'Fives' : 5, 'Sixes' : 6}
+            mySlot = whichOne[slot]
+            holder = 0
+            for roll in rolls:
+                if roll == mySlot:
+                    holder += roll
+            scoreCard[slot] = holder
+        totalScore = 0
+
+        counter = 0
+
+        for score in scoreCard.values():
+            if score != 'Empty' and counter < 6:
+                totalScore += int(score)
+            counter += 1
+
+        scoreCard['Total Score'] = totalScore
+        if totalScore >= 63:
+            scoreCard['Bonus'] = 35
+
+        scoreCard['Total'] = scoreCard['Bonus'] + totalScore
+        scoreCard['Total of lower section'] = lowTotal(scoreCard)
+        scoreCard['Total of upper section'] = scoreCard['Total']
+
+        scoreCard['Grand Total'] = scoreCard['Total of lower section'] + scoreCard['Total of upper section']
+
+        return scoreCard
     else:
-        whichOne = {'Aces' : 1, 'Twos' : 2, 'Threes' : 3, 'Fours' : 4, 'Fives' : 5, 'Sixes' : 6}
-        mySlot = whichOne[slot]
-        holder = 0
-        for roll in rolls:
-            if roll == mySlot:
-                holder += roll
-        scoreCard[slot] = holder
-    totalScore = 0
+        print('\n\nThe slot {0} is already used, please select another one'.format(slot))
+        return scoreCard
 
-    counter = 0
+def lowTotal(scoreCard):
+    total = 0
+    if scoreCard['3-of-a-Kind'] != 'Empty':
+        total += scoreCard['3-of-a-Kind']
+    if scoreCard['4-of-a-Kind'] != 'Empty':
+        total += scoreCard['4-of-a-Kind']
+    if scoreCard['Full-House'] != 'Empty':
+        total += scoreCard['Full-House']
+    if scoreCard['Small-Straight'] != 'Empty':
+        total += scoreCard['Small-Straight']
+    if scoreCard['Large-Straight'] != 'Empty':
+        total += scoreCard['Large-Straight']
+    if scoreCard['Yahtzee'] != 'Empty':
+        total += scoreCard['Yahtzee']
+    if scoreCard['Chance'] != 'Empty':
+        total += scoreCard['Chance']
+    if scoreCard['Yahtzee Bonus'] != 'Empty':
+        total += scoreCard['Yahtzee Bonus']
 
-    for score in scoreCard.values():
-        if score != 'Empty' and counter < 6:
-            totalScore += int(score)
-        counter += 1
-
-    scoreCard['Total Score'] = totalScore
-    if totalScore >= 63:
-        scoreCard['Bonus'] = 35
-
-    scoreCard['Total'] = scoreCard['Bonus'] + totalScore
-
-    return scoreCard
+    return total
 
 def printScorecard(scoreCard):
     print()
@@ -239,7 +282,7 @@ def scoreLargeStraight(roll):
 
 def scoreYahtzee(roll):
     if len(set(roll)) == 1:
-        return 100
+        return 50
     else:
         return False
 
