@@ -103,7 +103,7 @@ def validator(scoreCard, slot):
 def changeScoreCard(scoreCard, slot, rolls):
     if len(set(rolls)) == 1 and scoreCard['Yahtzee'] != 'Empty':
         scoreCard['Yahtzee Bonus'] = scoreCard['Yahtzee Bonus'] + 100
-
+    #Checkers
     if slot == '3-of-a-Kind':
         newScore = score3OAK(rolls)
         scoreCard['3-of-a-Kind'] = newScore
