@@ -1,4 +1,5 @@
 from random import randint
+import testHarness
 
 def Main(debug):
 
@@ -24,45 +25,17 @@ def Main(debug):
                  'Grand Total': 0
                  }
     if debug.capitalize() == 'T':
-        test1 = {1: ['Aces', [1, 2, 3, 4, 5]],
-                 2: ['3-of-a-Kind', [2, 3, 2, 4, 2]],
-                 3: ['3-of-a-Kind', [4, 2, 6, 4, 4]],
-                 4: ['Fours', [4, 2, 6, 4, 4]],
-                 5: ['Yahtzee', [6, 6, 6, 6, 6]],
-                 6: ['Full-House', [3, 5, 5, 3, 3]],
-                 7: ['Fives', [5, 2, 3, 5, 5]],
-                 8: ['Chance', [4, 4, 5, 5, 2]],
-                 9: ['Twos', [2, 2, 2, 3, 4]],
-                 10: ['Fours', [4, 2, 1, 3, 4]],
-                 11: ['Small-Straight', [4, 2, 1, 3, 4]],
-                 12: ['4-of-a-Kind', [3, 3, 3, 3, 3]],
-                 13: ['Large-Straight', [6, 4, 3, 2, 5]],
-                 14: ['Sixes', [6, 4, 6, 2, 1]],
-                 15: ['Threes', [3, 3, 3, 3, 3]]
-                 }
 
-        test2 = {1: ['3-of-a-Kind', [1, 2, 1, 1, 5]],
-                 2: ['Twos', [2, 2, 4, 5, 2]],
-                 3: ['Small-Straight', [1, 5, 3, 2, 4]],
-                 4: ['Full-House', [2, 2, 3, 3, 2]],
-                 5: ['Aces', [1, 3, 1, 1, 1]],
-                 6: ['Chance', [1, 3, 1, 2, 2]],
-                 7: ['Fives', [5, 5, 4, 5, 2]],
-                 8: ['4-of-a-Kind', [6, 6, 6, 5, 6]],
-                 9: ['Fours', [4, 4, 4, 1, 4]],
-                 10: ['Yahtzee', [6, 6, 6, 6, 6]],
-                 11: ['Threes', [3, 3, 3, 3, 3]],
-                 12: ['Large-Straight', [5, 1, 3, 4, 2]],
-                 13: ['Sixes', [6, 4, 3, 6, 5]],
-                 }
-
-        tests = [test1, test2]
+        gameCount = 1
+        tests = testHarness.getTests()
         #TODO create dictionary to parse through
         for test in tests:
+            print('***Game {0}***'.format(gameCount))
             scoreCard1 = scoreCard.copy()
             for i in range(len(test)):
                 scoreCard1 = changeScoreCard(scoreCard1, test[i + 1][0], test[i + 1][1])
                 printScorecard(scoreCard1)
+            gameCount += 1
 
     else:
         while True:
@@ -193,9 +166,13 @@ def lowTotal(scoreCard):
     return total
 
 def printScorecard(scoreCard):
+
+    tabDic = [6, 6, 6, 6, 6, 6, 5, 6, 6, 5, 5, 5, 4, 4, 6, 6, 4, 2, 2, 5]
     print()
+    count = 0
     for key, value in scoreCard.items():
-        print(str(key) + '\t' + str(value))
+        print(str(key) + tabDic[count] * '\t' + str(value))
+        count += 1
 
 def score3OAK(roll):
 
@@ -234,9 +211,9 @@ def scoreFullHouse(roll):
 
     valid = False
 
-    if len(setroll) == 2:
+    if len(setroll) <= 2:
         for num in setroll:
-            if roll.count(num) == 2 or roll.count(num) == 3:
+            if roll.count(num) == 2 or roll.count(num) == 3 or roll.count(num) == 5:
                 valid = True
             else:
                 valid = False
